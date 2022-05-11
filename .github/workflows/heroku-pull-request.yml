@@ -35,7 +35,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          # fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
+          fetch-depth: 0
           ref: ${{ github.head_ref }}
 
       # TODO: generate and add the secrets.HEROKU_API_KEY in github
