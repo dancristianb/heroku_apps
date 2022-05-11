@@ -5,6 +5,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+permissions:
+  pull-requests: write
+
 jobs:
   heroku-pull-request:
     runs-on: ubuntu-latest
