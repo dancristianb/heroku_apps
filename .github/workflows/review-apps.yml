@@ -13,7 +13,7 @@ env:
   HEROKU_PIPELINE_NAME: heroku-apps
   HEROKU_STAGE_NAME: development
   HEROKU_TEAM_NAME: algrano
-  HEROKU_EMAIL: ${{ dan.cristian.bota@gmail.com }}
+  HEROKU_EMAIL: dan.cristian.bota@gmail.com
 
 jobs:
   build-review-app:
