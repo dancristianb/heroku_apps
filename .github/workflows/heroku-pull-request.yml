@@ -12,7 +12,7 @@ jobs:
   heroku-pull-request:
     runs-on: ubuntu-latest
     env:
-      HEROKU_APP_NAME: ${{github.head_ref:0:24}}-${{ github.event.number }}
+      HEROKU_APP_NAME: review-app-${{ github.event.number }}
 
     steps:
       - name: Checkout repository
