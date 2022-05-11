@@ -1,6 +1,5 @@
 # https://remarkablemark.org/blog/2022/04/23/heroku-github-actions-pull-request/
 
-# .github/workflows/heroku-pull-request.yml
 name: Heroku Pull Request
 on:
   pull_request:
@@ -23,23 +22,26 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: user@example.com
+          heroku_email: dan.cristian.bota@gmail.com
           heroku_app_name: ${{ env.HEROKU_APP_NAME }}
           justlogin: true
 
+      # TODO: To create a Heroku app under a team, set the --team argument.
       - name: Create Heroku app
         if: github.event.action == 'opened'
         run: heroku apps:create ${{ env.HEROKU_APP_NAME }} # --team=my-team
 
+      # TODO: Replace heroku-apps with your pipeline name.
       - name: Add Heroku app to pipeline
         if: github.event.action == 'opened'
-        run: heroku pipelines:add my-pipeline --app=${{ env.HEROKU_APP_NAME }} --stage=development
+        run: heroku pipelines:add heroku-apps --app=${{ env.HEROKU_APP_NAME }} --stage=development
 
-      - name: Copy environment variables to Heroku app
-        if: github.event.action == 'opened'
-        run: |
-          heroku config --shell --app=my-development-app > .env
-          cat .env | tr '\n' ' ' | xargs heroku config:set --app=${{ env.HEROKU_APP_NAME }}
+      # TODO: check environment variables
+      #  - name: Copy environment variables to Heroku app
+      #    if: github.event.action == 'opened'
+      #    run: |
+      #      heroku config --shell --app=my-development-app > .env
+      #      cat .env | tr '\n' ' ' | xargs heroku config:set --app=${{ env.HEROKU_APP_NAME }}
 
       - name: Add Heroku remote
         run: heroku git:remote --app=${{ env.HEROKU_APP_NAME }}
