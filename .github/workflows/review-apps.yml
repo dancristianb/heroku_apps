@@ -16,7 +16,7 @@ env:
   HEROKU_EMAIL: dan.cristian.bota@gmail.com
 
 jobs:
-  build-review-app:
+  build:
     runs-on: ubuntu-latest
     if: github.event.action != 'closed'
 
@@ -65,7 +65,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  destroy-review-app:
+  destroy:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
 
