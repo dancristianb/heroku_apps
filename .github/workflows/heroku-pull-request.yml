@@ -1,6 +1,6 @@
 # https://remarkablemark.org/blog/2022/04/23/heroku-github-actions-pull-request/
 
-name: Heroku Pull Request
+name: Heroku Review Apps
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
@@ -8,18 +8,20 @@ on:
 permissions:
   pull-requests: write
 
+env:
+  HEROKU_APP_NAME: review-app-${{ github.event.number }}
+
 jobs:
-  heroku-pull-request:
+  build-review-app:
     runs-on: ubuntu-latest
-    env:
-      HEROKU_APP_NAME: review-app-${{ github.event.number }}
+    if: github.event.action != 'closed'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
-          ref: ${{ github.event.action != 'closed' && github.head_ref || '' }}
+          # fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
+          ref: ${{ github.head_ref }}
 
       # TODO: generate and add the secrets.HEROKU_API_KEY in github
       - name: Login to Heroku
@@ -48,11 +50,9 @@ jobs:
       #      cat .env | tr '\n' ' ' | xargs heroku config:set --app=${{ env.HEROKU_APP_NAME }}
 
       - name: Add Heroku remote
-        if: github.event.action != 'closed'
         run: heroku git:remote --app=${{ env.HEROKU_APP_NAME }}
 
       - name: Push to Heroku
-        if: github.event.action != 'closed'
         run: git push heroku ${{ github.head_ref }}:master --force
 
       - name: Add comment to PR
@@ -62,6 +62,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  destroy-review-app:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Destroy Heroku app
-        if: github.event.action == 'closed'
         run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
