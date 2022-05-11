@@ -1,6 +1,6 @@
 # https://remarkablemark.org/blog/2022/04/23/heroku-github-actions-pull-request/
 
-name: Heroku Review Apps
+name: Review Apps
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
@@ -10,6 +10,10 @@ permissions:
 
 env:
   HEROKU_APP_NAME: review-app-${{ github.event.number }}
+  HEROKU_PIPELINE_NAME: heroku-apps
+  HEROKU_STAGE_NAME: development
+  HEROKU_TEAM_NAME: algrano
+  HEROKU_EMAIL: ${{ dan.cristian.bota@gmail.com }}
 
 jobs:
   build-review-app:
@@ -28,19 +32,18 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: dan.cristian.bota@gmail.com
+          heroku_email: ${{ env.HEROKU_EMAIL }}
           heroku_app_name: ${{ env.HEROKU_APP_NAME }}
           justlogin: true
 
-      # TODO: To create a Heroku app under a team, set the --team argument.
+      # TODO: To create a Heroku app under a team, set the --team argument / HEROKU_TEAM_NAME
       - name: Create Heroku app
         if: github.event.action == 'opened'
         run: heroku apps:create ${{ env.HEROKU_APP_NAME }} # --team=my-team
 
-      # TODO: Replace heroku-apps with your pipeline name.
       - name: Add Heroku app to pipeline
         if: github.event.action == 'opened'
-        run: heroku pipelines:add heroku-apps --app=${{ env.HEROKU_APP_NAME }} --stage=development
+        run: heroku pipelines:add ${{ env.HEROKU_PIPELINE_NAME }} --app=${{ env.HEROKU_APP_NAME }} --stage=${{ env.HEROKU_STAGE_NAME }}
 
       # TODO: check environment variables
       #  - name: Copy environment variables to Heroku app
@@ -72,7 +75,7 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: dan.cristian.bota@gmail.com
+          heroku_email: ${{ env.HEROKU_EMAIL }}
           heroku_app_name: ${{ env.HEROKU_APP_NAME }}
           justlogin: true
 
