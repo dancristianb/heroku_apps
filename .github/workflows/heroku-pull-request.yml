@@ -12,22 +12,7 @@ env:
   HEROKU_APP_NAME: review-app-${{ github.event.number }}
 
 jobs:
-  heroku-log-in:
-    runs-on: ubuntu-latest
-
-    steps:
-      # TODO: generate and add the secrets.HEROKU_API_KEY in github
-      - name: Login to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_email: dan.cristian.bota@gmail.com
-          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
-          justlogin: true
-
   build-review-app:
-    needs: heroku-log-in
-
     runs-on: ubuntu-latest
     if: github.event.action != 'closed'
 
@@ -78,11 +63,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   destroy-review-app:
-    needs: heroku-log-in
-
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
 
     steps:
+      # TODO: generate and add the secrets.HEROKU_API_KEY in github
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_email: dan.cristian.bota@gmail.com
+          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+          justlogin: true
+
       - name: Destroy Heroku app
         run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
